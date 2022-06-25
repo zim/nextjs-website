@@ -2,10 +2,29 @@ import Head from "next/head";
 import Layout, { siteTitle } from "../components/layout";
 import utilStyles from "../styles/utils.module.css";
 import { getSortedPostsData } from "../lib/posts";
+import { getTeamsData } from "../lib/teams";
 import Link from "next/link";
 import Date from "../components/date";
 
-export default function Home({ allPostsData }) {
+console.log("getTeamsData =======");
+console.log(getTeamsData());
+
+export async function getStaticProps() {
+	const allPostsData = getSortedPostsData();
+	const allTeamsData = getTeamsData();
+	return {
+		props: {
+			allPostsData,
+			allTeamsData,
+		},
+	};
+}
+
+export default function Home({ allPostsData, allTeamsData }) {
+	console.log("allPostsData");
+	console.log(allPostsData);
+	console.log("allTeamsData");
+	console.log(allTeamsData);
 	return (
 		<Layout home>
 			<Head>
@@ -37,15 +56,20 @@ export default function Home({ allPostsData }) {
 					))}
 				</ul>
 			</section>
+
+			<section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
+				<h2 className={utilStyles.headingLg}>Teams</h2>
+				<ul className={utilStyles.list}>
+					{allTeamsData.clubs.map(({ id, name, country }) => (
+						<li className={utilStyles.listItem} key={id}>
+							<Link href={`/teams/${id}`}>
+								<a>{name}</a>
+							</Link>
+							<p className={utilStyles.lightText}>{country}</p>
+						</li>
+					))}
+				</ul>
+			</section>
 		</Layout>
 	);
-}
-
-export async function getStaticProps() {
-	const allPostsData = getSortedPostsData();
-	return {
-		props: {
-			allPostsData,
-		},
-	};
 }
